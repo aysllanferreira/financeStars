@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import {
   CognitoUserPool,
-  AuthenticationDetails,
   CognitoUser,
   CognitoUserAttribute,
+  AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
 import * as dotenv from 'dotenv';
 
@@ -44,6 +44,25 @@ export class AuthService {
           }
         },
       );
+    });
+  }
+
+  async confirmSignUp(email: string, code: string): Promise<void> {
+    const userData = {
+      Username: email,
+      Pool: this.userPool,
+    };
+
+    const cognitoUser = new CognitoUser(userData);
+
+    return new Promise((resolve, reject) => {
+      cognitoUser.confirmRegistration(code, true, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
     });
   }
 
