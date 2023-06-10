@@ -5,6 +5,12 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post('signup')
+  async signUp(@Body() body): Promise<any> {
+    const { username, password } = body;
+    return this.authService.signUp(username, password);
+  }
+
   @Post('signin')
   async signIn(@Body() body): Promise<any> {
     const { username, password } = body;

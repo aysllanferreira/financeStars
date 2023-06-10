@@ -22,6 +22,26 @@ export class AuthService {
     this.userPool = new CognitoUserPool(poolData);
   }
 
+  async signUp(username: string, password: string): Promise<any> {
+    const attributeList = [];
+
+    return new Promise((resolve, reject) => {
+      this.userPool.signUp(
+        username,
+        password,
+        attributeList,
+        null,
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result.user.getUsername());
+          }
+        },
+      );
+    });
+  }
+
   async signIn(username: string, password: string): Promise<string> {
     const authenticationDetails = new AuthenticationDetails({
       Username: username,
