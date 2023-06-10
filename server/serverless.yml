@@ -1,0 +1,63 @@
+service: ${env:APP}
+
+useDotenv: true
+
+frameworkVersion: '3'
+
+custom:
+  serverless-offline:
+    httpPort: 4000
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: ${env:AWS_REGION}
+  stage: 'dev'
+
+functions:
+  app:
+    handler: dist/lambda.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+    environment:
+      S3_BUCKET_NAME: ${env:S3_BUCKET_NAME}
+      AWS_REGION: ${env:AWS_REGION}
+      APP: ${env:APP}
+
+package:
+  individually: true
+  exclude:
+    - ./**
+  include:
+    - dist/**
+    - node_modules/**
+
+plugins:
+  - serverless-offline
+  
+
+resources:
+  Resources:
+    WebAppS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:S3_BUCKET_NAME}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+  Outputs:
+    WebAppS3BucketOutput:
+      Value: 
+        Ref: WebAppS3Bucket
+      Export:
+        Name: WebAppS3Bucket
