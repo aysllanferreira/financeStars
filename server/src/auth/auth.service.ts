@@ -1,9 +1,9 @@
-// auth/auth.service.ts
 import { Injectable } from '@nestjs/common';
 import {
   CognitoUserPool,
   AuthenticationDetails,
   CognitoUser,
+  CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
 import * as dotenv from 'dotenv';
 
@@ -22,12 +22,17 @@ export class AuthService {
     this.userPool = new CognitoUserPool(poolData);
   }
 
-  async signUp(username: string, password: string): Promise<any> {
-    const attributeList = [];
+  async signUp(email: string, password: string): Promise<any> {
+    const attributeList = [
+      new CognitoUserAttribute({
+        Name: 'email',
+        Value: email,
+      }),
+    ];
 
     return new Promise((resolve, reject) => {
       this.userPool.signUp(
-        username,
+        email,
         password,
         attributeList,
         null,
@@ -42,14 +47,14 @@ export class AuthService {
     });
   }
 
-  async signIn(username: string, password: string): Promise<string> {
+  async signIn(email: string, password: string): Promise<string> {
     const authenticationDetails = new AuthenticationDetails({
-      Username: username,
+      Username: email,
       Password: password,
     });
 
     const userData = {
-      Username: username,
+      Username: email,
       Pool: this.userPool,
     };
 

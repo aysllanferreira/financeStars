@@ -7,13 +7,13 @@ export class AuthController {
 
   @Post('signup')
   async signUp(@Body() body): Promise<any> {
-    const { username, password } = body;
-    return this.authService.signUp(username, password);
+    const { email, password } = body;
+    return this.authService.signUp(email, password);
   }
 
   @Post('signin')
   async signIn(@Body() body): Promise<any> {
-    const { username, password } = body;
-    return this.authService.signIn(username, password);
+    const { email, password } = body;
+    return this.authService.signIn(email, password);
   }
 }
