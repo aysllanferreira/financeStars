@@ -1,4 +1,4 @@
-export default function LoginButton() {
+export default function oAuthGoogle() {
   const handleClick = () => {
     const domain = process.env.NEXT_PUBLIC_OAUTH_COGNITO_DOMAIN || '';
     const clientId = process.env.NEXT_PUBLIC_OAUTH_COGNITO_ID || '';

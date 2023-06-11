@@ -1,4 +1,4 @@
-import Login from '../components/Login';
+import Login from '../components/oAuthGoogle';
 
 export default function Home() {
   return (
