@@ -5,6 +5,7 @@ import {
   CognitoUserAttribute,
   AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
+import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -87,6 +88,59 @@ export class AuthService {
         onFailure: (err) => {
           reject(err);
         },
+      });
+    });
+  }
+
+  async validateTokenAndGetUser(jwtToken: string): Promise<any> {
+    const decodedToken: any = jwt.decode(jwtToken, { complete: true });
+
+    const username = decodedToken.payload['cognito:username'] || '';
+    const email = decodedToken.payload['email'] || '';
+    const family_name = decodedToken.payload['family_name'] || '';
+    const given_name = decodedToken.payload['given_name'] || '';
+    const picture = decodedToken.payload['picture'] || '';
+
+    if (email || family_name || given_name || picture) {
+      return {
+        username: username,
+        email: email,
+        family_name: family_name,
+        given_name: given_name,
+        picture: picture,
+      };
+    }
+
+    const userData = {
+      Username: username,
+      Pool: this.userPool,
+    };
+
+    const cognitoUser = new CognitoUser(userData);
+
+    return new Promise((resolve, reject) => {
+      cognitoUser.getUserAttributes((err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          const userAttributes: {
+            email?: string;
+            family_name?: string;
+            given_name?: string;
+            picture?: string;
+            [key: string]: any;
+          } = result.reduce((obj, attribute) => {
+            obj[attribute.getName()] = attribute.getValue();
+            return obj;
+          }, {});
+
+          userAttributes.email = userAttributes.email || '';
+          userAttributes.family_name = userAttributes.family_name || '';
+          userAttributes.given_name = userAttributes.given_name || '';
+          userAttributes.picture = userAttributes.picture || '';
+
+          resolve(userAttributes);
+        }
       });
     });
   }
