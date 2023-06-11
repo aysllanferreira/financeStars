@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Req,
+  Res,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -19,15 +28,38 @@ export class AuthController {
   }
 
   @Post('signin')
-  async signIn(@Body() body): Promise<any> {
+  async signIn(
+    @Body() body,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<any> {
     const { email, password } = body;
-    return this.authService.signIn(email, password);
+
+    const token = await this.authService.signIn(email, password);
+    response.cookie('id_token', token, {
+      httpOnly: true,
+      maxAge: 2592000 * 1000,
+    });
+    return { status: 'success' };
+  }
+
+  @Post('auth0')
+  async authO(
+    @Body() body,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<any> {
+    const { token } = body;
+
+    // Send cookies in the header
+    response.setHeader('Set-Cookie', [
+      `id_token=${token}; HttpOnly; Max-Age=2592000; Path=/; SameSite=Lax`,
+    ]);
+    return { status: 'success' };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@Req() req): Promise<any> {
-    const jwtToken = req.headers.authorization.split(' ')[1];
+    const jwtToken = req.cookies['id_token'];
     const user = await this.authService.validateTokenAndGetUser(jwtToken);
     return user;
   }
