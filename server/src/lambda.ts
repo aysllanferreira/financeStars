@@ -2,6 +2,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import * as serverless from 'aws-serverless-express';
+import * as CookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import * as express from 'express';
 
@@ -9,7 +10,11 @@ let cachedServer;
 
 async function bootstrap(server) {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  });
+  app.use(CookieParser());
   await app.init();
   return server;
 }

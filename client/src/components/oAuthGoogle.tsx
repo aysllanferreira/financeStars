@@ -1,8 +1,8 @@
 export default function oAuthGoogle() {
   const handleClick = () => {
-    const domain = process.env.NEXT_PUBLIC_OAUTH_COGNITO_DOMAIN || '';
-    const clientId = process.env.NEXT_PUBLIC_OAUTH_COGNITO_ID || '';
-    const redirectUri = process.env.NEXT_PUBLIC_OAUTH_COGNITO_REDIRECT_URL || '';
+    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '';
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_ID || '';
+    const redirectUri = process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URL || '';
 
     window.location.href = `${domain}/oauth2/authorize?identity_provider=Google&redirect_uri=${redirectUri}&response_type=token&client_id=${clientId}&scope=email+openid+profile`;
   };
