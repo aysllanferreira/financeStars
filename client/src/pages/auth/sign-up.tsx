@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+import { signUp } from '../../utils/auth';
 
 export default function SignUp() {
+  const router = useRouter();
+
   const [data, setData] = useState({
     email: '',
     password: '',
@@ -11,13 +15,39 @@ export default function SignUp() {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { email, password, confirmPassword } = data;
+
+      // Email regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('Invalid email');
+        return;
+      }
+
+    if (password !== confirmPassword || password === '' || confirmPassword === '') {
+      alert('Passwords do not match');
+      return;
+    }
+
+    try {
+      await signUp({ email, password });
+      localStorage.setItem('code', 'true');
+      router.push('/auth/confirmation');
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
   return (
     <main className="bg-gray-100 min-h-screen flex items-center justify-center">
       <div className="bg-white p-8 rounded shadow-md w-[450px]">
         <h1 className="text-2xl font-bold mb-4">Finance Star</h1>
         <p className="text-gray-700 mb-6">Sign Up</p>
 
-        <form className="grid gap-4">
+        <form className="grid gap-4" onSubmit={handleSubmit}>
           <label htmlFor="email" className="text-gray-700">
             Email
           </label>
