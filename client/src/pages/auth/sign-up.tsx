@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function SignUp() {
+  const [data, setData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });  
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setData((prev) => ({ ...prev, [name]: value }));
+  };
   return (
     <main className="bg-gray-100 min-h-screen flex items-center justify-center">
       <div className="bg-white p-8 rounded shadow-md w-[450px]">
@@ -16,6 +26,7 @@ export default function SignUp() {
             id="email"
             name="email"
             className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={handleChange}
           />
 
           <label htmlFor="password" className="text-gray-700">
@@ -26,6 +37,7 @@ export default function SignUp() {
             id="password"
             name="password"
             className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={handleChange}
           />
 
           <label htmlFor="confirmPassword" className="text-gray-700">
@@ -36,6 +48,7 @@ export default function SignUp() {
             id="confirmPassword"
             name="confirmPassword"
             className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={handleChange}
           />
 
           <button
@@ -56,7 +69,7 @@ export default function SignUp() {
 
           <p className="text-gray-700 text-center mt-4">
             Already have an account?{' '}
-            <a href="/login" className="text-blue-500 hover:underline">
+            <a href="/auth/signin" className="text-blue-500 hover:underline">
               Login
             </a>
           </p>
