@@ -34,7 +34,7 @@ export default function SignUp() {
 
     try {
       await signUp({ email, password });
-      localStorage.setItem('code', 'true');
+      localStorage.setItem('code', email);
       router.push('/auth/confirmation');
     } catch (err: any) {
       alert(err.message);
