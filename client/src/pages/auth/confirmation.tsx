@@ -23,7 +23,8 @@ export default function Confirmation() {
 
     try {
       await confirmSignUp(data);
-      router.push('/auth/sign-up');
+      router.push('/auth/sign-in');
+      localStorage.removeItem('code');
     } catch (err: any) {
       alert(err.message);
     }
