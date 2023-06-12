@@ -1,4 +1,4 @@
-import me from '../../utils/me'
+import me from '@/utils/me'
 
 export default function Dashboard() {
   const user = me()
