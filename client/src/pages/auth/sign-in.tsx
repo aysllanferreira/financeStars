@@ -11,7 +11,16 @@ export default function SignUp() {
     password: '',
   });
 
+  const [error, setError] = useState({
+    status: false,
+    message: '',
+  });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError({
+      status: false,
+      message: '',
+    });
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
@@ -20,10 +29,13 @@ export default function SignUp() {
     e.preventDefault();
     const { email, password } = data;
 
-    // Email regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!emailRegex.test(email)) {
-      alert('Invalid email');
+      setError({
+        status: true,
+        message: 'Please enter a valid email address',
+      });
       return;
     }
 
@@ -31,7 +43,10 @@ export default function SignUp() {
       await signIn({ email, password });
       router.push('/');
     } catch (err: any) {
-      alert(err.message);
+      setError({
+        status: true,
+        message: err.response.data.message,
+      });
     }
   };
 
@@ -68,9 +83,10 @@ export default function SignUp() {
             type="submit"
             className="bg-blue-500 text-white rounded px-4 py-2 font-semibold hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
           >
-            Sign Up
+            Sign In
           </button>
         </form>
+        {error.status && <div className="text-red-500 text-sm mt-4">{error.message}</div>}
         <hr className="my-4" />
 
         <OAuthGoogle />

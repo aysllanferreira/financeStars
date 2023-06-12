@@ -28,7 +28,6 @@ export default function SignUp() {
     e.preventDefault();
     const { email, password, confirmPassword } = data;
 
-      // Email regex
       const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (!emailRegex.test(email)) {
         setError({
@@ -50,9 +49,7 @@ export default function SignUp() {
       await signUp({ email, password });
       localStorage.setItem('code', email);
       router.push('/auth/confirmation');
-    } catch (err: any) {
-      console.log(err);
-      
+    } catch (err: any) {      
       setError({
         status: true,
         message: err.response.data.message,
