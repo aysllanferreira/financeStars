@@ -13,7 +13,15 @@ const useMe = () => {
     if (!me) {
       GetMe()
         .then((res) => {
+          const data = res.data;
           dispatch(setMe(res.data));
+
+          const { email, family_name, given_name, picture } = data;
+
+          if (!email || !family_name || !given_name || !picture) {
+            router.push('/app/profile');
+          }
+          
         })
         .catch(() => {
           router.push('/auth/sign-in');
