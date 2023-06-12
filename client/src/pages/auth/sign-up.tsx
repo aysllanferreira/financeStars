@@ -9,9 +9,17 @@ export default function SignUp() {
     email: '',
     password: '',
     confirmPassword: '',
-  });  
+  });
+  const [error, setError] = useState({
+      status: false,
+      message: '',
+    });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError({
+      status: false,
+      message: '',
+    });
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
@@ -21,14 +29,20 @@ export default function SignUp() {
     const { email, password, confirmPassword } = data;
 
       // Email regex
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (!emailRegex.test(email)) {
-        alert('Invalid email');
+        setError({
+          status: true,
+          message: 'Please enter a valid email address',
+        });
         return;
       }
 
     if (password !== confirmPassword || password === '' || confirmPassword === '') {
-      alert('Passwords do not match');
+      setError({
+        status: true,
+        message: 'Passwords do not match',
+      });
       return;
     }
 
@@ -37,7 +51,12 @@ export default function SignUp() {
       localStorage.setItem('code', email);
       router.push('/auth/confirmation');
     } catch (err: any) {
-      alert(err.message);
+      console.log(err);
+      
+      setError({
+        status: true,
+        message: err.response.data.message,
+      });
     }
   };
 
@@ -87,6 +106,10 @@ export default function SignUp() {
           >
             Sign Up
           </button>
+
+          {error.status && (
+            <div className="text-red-500 text-sm">{error.message}</div>
+          )}
 
           <hr className="my-4" />
 
