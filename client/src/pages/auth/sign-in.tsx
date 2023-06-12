@@ -41,7 +41,7 @@ export default function SignUp() {
 
     try {
       await signIn({ email, password });
-      router.push('/');
+      router.push('/app/dashboard');
     } catch (err: any) {
       setError({
         status: true,

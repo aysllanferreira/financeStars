@@ -18,7 +18,7 @@ export default function Callback() {
           const token = idToken;
           
           await axios.post(url, { token }, { withCredentials: true });
-          router.push('/');
+          router.push('/app/dashboard');
         } catch (err) {
           console.log(err);
         }
