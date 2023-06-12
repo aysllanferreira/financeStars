@@ -18,3 +18,20 @@ export const signUp = async (user : User) => {
     console.error(error);
   }
 };
+
+interface SignInResponse {
+  email: string;
+  code: string;
+}
+
+export const confirmSignUp = async (info : SignInResponse) => {
+  try {
+    const { data } = await axios.post(`${URL}/auth/confirmation`, {
+      email: info.email,
+      code: info.code,
+    });
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
