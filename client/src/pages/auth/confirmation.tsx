@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { confirmSignUp } from '../../utils/auth';
+import useIsLogged from '@/utils/isLogged'
 
 export default function Confirmation() {
+  useIsLogged()
   const router = useRouter();
 
   const [email, setEmail] = useState('');

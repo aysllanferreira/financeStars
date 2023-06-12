@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { signUp } from '../../utils/auth';
+import useIsLogged from '@/utils/isLogged'
 
 export default function SignUp() {
   const router = useRouter();
+  useIsLogged()
 
   const [data, setData] = useState({
     email: '',

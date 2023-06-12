@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { signIn } from '../../utils/auth';
-import OAuthGoogle from '../../components/oAuthGoogle'; // Here
+import OAuthGoogle from '../../components/oAuthGoogle';
+import useIsLogged from '@/utils/isLogged'
 
 export default function SignUp() {
   const router = useRouter();
+  useIsLogged()
 
   const [data, setData] = useState({
     email: '',
