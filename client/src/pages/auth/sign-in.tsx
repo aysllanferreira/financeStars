@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { signIn, me } from '../../utils/auth';
+import { signIn } from '../../utils/auth';
 import OAuthGoogle from '../../components/oAuthGoogle'; // Here
 
 export default function SignUp() {
@@ -34,20 +34,6 @@ export default function SignUp() {
       alert(err.message);
     }
   };
-
-  useEffect(() => {
-    const getMe = async () => {
-      try {
-        const data = await me();
-        console.log(data);
-        
-      } catch (err: any) {
-        console.log(err.message);
-      }
-      
-    };
-    getMe();
-  }, []);
 
   return (
     <main className="bg-gray-100 min-h-screen flex items-center justify-center">
