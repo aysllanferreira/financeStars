@@ -7,57 +7,40 @@ interface User {
   password: string;
 }
 
-export const signUp = async (user : User) => {
-  try {
-    const { data } = await axios.post(`${URL}/auth/signup`, {
-      email: user.email,
-      password: user.password,
-    });
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 interface SignInResponse {
   email: string;
   code: string;
 }
-
-export const confirmSignUp = async (info : SignInResponse) => {
-  try {
-    const { data } = await axios.post(`${URL}/auth/confirmation`,  {
-      email: info.email,
-      code: info.code,
-    },  { withCredentials: true });
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 interface SignIn {
   email: string;
   password: string;
 }
 
-export const signIn = async (user : SignIn) => {
-  try {
-    const { data } = await axios.post(`${URL}/auth/signin`, {
+export const signUp = async (user: User) =>
+  axios.post(`${URL}/auth/signup`, {
+    email: user.email,
+    password: user.password,
+  });
+
+export const confirmSignUp = async (info: SignInResponse) =>
+  axios.post(
+    `${URL}/auth/confirmation`,
+    {
+      email: info.email,
+      code: info.code,
+    },
+    { withCredentials: true },
+  );
+
+export const signIn = async (user: SignIn) =>
+  axios.post(
+    `${URL}/auth/signin`,
+    {
       email: user.email,
       password: user.password,
-    },  { withCredentials: true });
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-}
+    },
+    { withCredentials: true },
+  );
 
-export const me = async () => {
-  try {
-    const { data } = await axios.get(`${URL}/auth/me`, { withCredentials: true });
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-}
+export const me = async () => axios.get(`${URL}/auth/me`, { withCredentials: true });

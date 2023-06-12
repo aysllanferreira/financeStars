@@ -4,6 +4,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import * as serverless from 'aws-serverless-express';
 import * as CookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './http-exception.filter';
 import * as express from 'express';
 
 let cachedServer;
@@ -15,6 +16,7 @@ async function bootstrap(server) {
     credentials: true,
   });
   app.use(CookieParser());
+  app.useGlobalFilters(new HttpExceptionFilter());
   await app.init();
   return server;
 }

@@ -5,6 +5,7 @@ import {
   CognitoUserAttribute,
   AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 
@@ -37,9 +38,9 @@ export class AuthService {
         password,
         attributeList,
         null,
-        (err, result) => {
+        (err: Error, result) => {
           if (err) {
-            reject(err);
+            reject(new HttpException(err.message, HttpStatus.BAD_REQUEST));
           } else {
             resolve(result.user.getUsername());
           }
@@ -57,9 +58,9 @@ export class AuthService {
     const cognitoUser = new CognitoUser(userData);
 
     return new Promise((resolve, reject) => {
-      cognitoUser.confirmRegistration(code, true, (err, result) => {
+      cognitoUser.confirmRegistration(code, true, (err: Error, result) => {
         if (err) {
-          reject(err);
+          reject(new HttpException(err.message, HttpStatus.BAD_REQUEST));
         } else {
           resolve(result);
         }
@@ -85,8 +86,8 @@ export class AuthService {
         onSuccess: (result) => {
           resolve(result.getIdToken().getJwtToken());
         },
-        onFailure: (err) => {
-          reject(err);
+        onFailure: (err: Error) => {
+          reject(new HttpException(err.message, HttpStatus.UNAUTHORIZED));
         },
       });
     });
@@ -119,9 +120,9 @@ export class AuthService {
     const cognitoUser = new CognitoUser(userData);
 
     return new Promise((resolve, reject) => {
-      cognitoUser.getUserAttributes((err, result) => {
+      cognitoUser.getUserAttributes((err: Error, result) => {
         if (err) {
-          reject(err);
+          reject(new HttpException(err.message, HttpStatus.UNAUTHORIZED));
         } else {
           const userAttributes: {
             email?: string;

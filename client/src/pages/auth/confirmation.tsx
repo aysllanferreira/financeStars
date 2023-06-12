@@ -7,6 +7,10 @@ export default function Confirmation() {
 
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [error, setError] = useState({
+    status: false,
+    message: '',
+  });
 
   useEffect(() => {
     const lsEmail = localStorage.getItem('code');
@@ -26,7 +30,10 @@ export default function Confirmation() {
       router.push('/auth/sign-in');
       localStorage.removeItem('code');
     } catch (err: any) {
-      alert(err.message);
+      setError({
+        status: true,
+        message: err.response.data.message,
+      });
     }
   };
 
@@ -45,7 +52,13 @@ export default function Confirmation() {
             id="code"
             name="code"
             className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={(e) => setCode(e.target.value)}
+            onChange={(e) => {
+              setCode(e.target.value);
+              setError({
+                status: false,
+                message: '',
+              });
+            }}
           />
 
           <button
@@ -55,6 +68,7 @@ export default function Confirmation() {
             Send
           </button>
         </form>
+        {error.status && <div className="text-red-500 text-sm mt-4">{error.message}</div>}
       </div>
     </main>
   );
