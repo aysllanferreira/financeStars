@@ -43,4 +43,4 @@ export const signIn = async (user: SignIn) =>
     { withCredentials: true },
   );
 
-export const me = async () => axios.get(`${URL}/auth/me`, { withCredentials: true });
+export const GetMe = async () => axios.get(`${URL}/auth/me`, { withCredentials: true });
