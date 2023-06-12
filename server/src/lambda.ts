@@ -6,6 +6,7 @@ import * as CookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './http-exception.filter';
 import * as express from 'express';
+import * as bodyParser from 'body-parser';
 
 let cachedServer;
 
@@ -15,6 +16,8 @@ async function bootstrap(server) {
     origin: 'http://localhost:3000',
     credentials: true,
   });
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   app.use(CookieParser());
   app.useGlobalFilters(new HttpExceptionFilter());
   await app.init();

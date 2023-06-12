@@ -18,26 +18,11 @@ export class ProfileService {
     username: string,
     firstName: string,
     lastName: string,
-    pictureFile: any,
   ) {
     const userAttributes = [
       { Name: 'given_name', Value: firstName },
       { Name: 'family_name', Value: lastName },
     ];
-
-    if (pictureFile) {
-      const pictureKey = `${username}/${uuidv4()}`;
-      await this.s3
-        .upload({
-          Bucket: process.env.S3_BUCKET_NAME,
-          Key: pictureKey,
-          Body: pictureFile.buffer,
-          ACL: 'public-read', // This allows the file to be read publicly
-        })
-        .promise();
-
-      userAttributes.push({ Name: 'picture', Value: pictureKey });
-    }
 
     await this.cognitoIdentityServiceProvider
       .adminUpdateUserAttributes({

@@ -1,26 +1,44 @@
 import { useState } from 'react';
+import axios from 'axios';
 import me from '@/utils/me';
 
 export default function Profile() {
-  me();
+  const getMe = me();
 
   // State to store the form values
-  const [formValues, setFormValues] = useState({ first_name: '', last_name: '', picture: null });
+  const [formValues, setFormValues] = useState({ first_name: '', last_name: '' });
 
   // Function to handle form changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, files, value } = e.target;
+
     setFormValues({
       ...formValues,
-      [e.target.name]: e.target.files ? e.target.files[0] : e.target.value,
+      [name]: value,
     });
   };
 
   // Function to handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // TODO: Add the code to make a POST request to the backend
-    console.log(formValues);
+    const formData = new FormData();
+    formData.append('username', getMe?.username);
+    formData.append('first_name', formValues.first_name);
+    formData.append('last_name', formValues.last_name);
+
+    try {
+      const response = await axios.post('http://localhost:4000/dev/profile/update', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log(response.data);
+    } catch (error) {
+      // handle error case
+      console.error(error);
+    }
   };
 
   return (
@@ -59,19 +77,15 @@ export default function Profile() {
             />
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="picture" className="block text-gray-700 font-medium mb-2">
-              Picture
-            </label>
-            <input
-              type="file"
-              name="picture"
-              id="picture"
-              onChange={handleChange}
-              className="border border-gray-300 rounded w-full px-3 py-2"
-            />
-          </div>
+          <div className="mb-4"></div>
         </fieldset>
+
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-8"
+        >
+          Save
+        </button>
       </form>
     </main>
   );
