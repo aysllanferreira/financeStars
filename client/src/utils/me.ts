@@ -15,11 +15,10 @@ const useMe = () => {
         .then((res) => {
           const data = res.data;
           dispatch(setMe(res.data));
-          console.log(data);
           
-          const { email, family_name, given_name, picture } = data;
+          const { email, family_name, given_name } = data;
 
-          if (!email || !family_name || !given_name || !picture) {
+          if (!email || !family_name || !given_name) {
             router.push('/app/profile');
           }
           
