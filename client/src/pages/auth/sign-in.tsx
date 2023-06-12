@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { signUp } from '../../utils/auth';
+import { signIn, me } from '../../utils/auth';
+import OAuthGoogle from '../../components/oAuthGoogle'; // Here
 
 export default function SignUp() {
   const router = useRouter();
@@ -8,8 +9,7 @@ export default function SignUp() {
   const [data, setData] = useState({
     email: '',
     password: '',
-    confirmPassword: '',
-  });  
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -18,28 +18,36 @@ export default function SignUp() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { email, password, confirmPassword } = data;
+    const { email, password } = data;
 
-      // Email regex
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        alert('Invalid email');
-        return;
-      }
-
-    if (password !== confirmPassword || password === '' || confirmPassword === '') {
-      alert('Passwords do not match');
+    // Email regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Invalid email');
       return;
     }
 
     try {
-      await signUp({ email, password });
-      localStorage.setItem('code', email);
-      router.push('/auth/confirmation');
+      await signIn({ email, password });
+      router.push('/');
     } catch (err: any) {
       alert(err.message);
     }
   };
+
+  useEffect(() => {
+    const getMe = async () => {
+      try {
+        const data = await me();
+        console.log(data);
+        
+      } catch (err: any) {
+        console.log(err.message);
+      }
+      
+    };
+    getMe();
+  }, []);
 
   return (
     <main className="bg-gray-100 min-h-screen flex items-center justify-center">
@@ -70,33 +78,23 @@ export default function SignUp() {
             onChange={handleChange}
           />
 
-          <label htmlFor="confirmPassword" className="text-gray-700">
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleChange}
-          />
-
           <button
             type="submit"
             className="bg-blue-500 text-white rounded px-4 py-2 font-semibold hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
           >
             Sign Up
           </button>
-
-          <hr className="my-4" />
-
-          <p className="text-gray-700 text-center mt-4">
-            Already have an account?{' '}
-            <a href="/auth/sign-in" className="text-blue-500 hover:underline">
-              Login
-            </a>
-          </p>
         </form>
+        <hr className="my-4" />
+
+        <OAuthGoogle />
+
+        <p className="text-gray-700 text-center mt-4">
+          Dont have an account?{' '}
+          <a href="/auth/sign-up" className="text-blue-500 hover:underline">
+            Register
+          </a>
+        </p>
       </div>
     </main>
   );

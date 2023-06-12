@@ -35,10 +35,12 @@ export class AuthController {
     const { email, password } = body;
 
     const token = await this.authService.signIn(email, password);
-    response.cookie('id_token', token, {
-      httpOnly: true,
-      maxAge: 2592000 * 1000,
-    });
+    console.log(token);
+
+    // Send cookies in the header
+    response.setHeader('Set-Cookie', [
+      `id_token=${token}; HttpOnly; Max-Age=2592000; Path=/; SameSite=Lax`,
+    ]);
     return { status: 'success' };
   }
 
@@ -49,7 +51,6 @@ export class AuthController {
   ): Promise<any> {
     const { token } = body;
 
-    // Send cookies in the header
     response.setHeader('Set-Cookie', [
       `id_token=${token}; HttpOnly; Max-Age=2592000; Path=/; SameSite=Lax`,
     ]);
