@@ -35,11 +35,11 @@ export class AuthController {
     const { email, password } = body;
 
     const token = await this.authService.signIn(email, password);
-    console.log(token);
 
     // Send cookies in the header
     response.setHeader('Set-Cookie', [
-      `id_token=${token}; HttpOnly; Max-Age=2592000; Path=/; SameSite=Lax`,
+      `id_token=${token.idToken}; HttpOnly; Max-Age=2592000; Path=/; SameSite=Lax`,
+      `refresh_token=${token.refreshToken}; HttpOnly; Max-Age=2592000; Path=/; SameSite=Lax`,
     ]);
     return { status: 'success' };
   }
@@ -63,5 +63,25 @@ export class AuthController {
     const jwtToken = req.cookies['id_token'];
     const user = await this.authService.validateTokenAndGetUser(jwtToken);
     return user;
+  }
+
+  @Post('refresh-token')
+  async refreshToken(
+    @Body('username') username: string,
+    @Res({ passthrough: true }) response: Response,
+    @Req() req,
+  ): Promise<any> {
+    const refreshToken = req.cookies['refresh_token'];
+
+    const newToken = await this.authService.refreshToken(
+      username,
+      refreshToken,
+    );
+
+    response.setHeader('Set-Cookie', [
+      `id_token=${newToken}; HttpOnly; Max-Age=2592000; Path=/; SameSite=Lax`,
+    ]);
+
+    return { status: 'success' };
   }
 }

@@ -4,6 +4,7 @@ import {
   CognitoUser,
   CognitoUserAttribute,
   AuthenticationDetails,
+  CognitoRefreshToken,
 } from 'amazon-cognito-identity-js';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
@@ -68,7 +69,7 @@ export class AuthService {
     });
   }
 
-  async signIn(email: string, password: string): Promise<string> {
+  async signIn(email: string, password: string): Promise<any> {
     const authenticationDetails = new AuthenticationDetails({
       Username: email,
       Password: password,
@@ -84,7 +85,11 @@ export class AuthService {
     return new Promise((resolve, reject) => {
       newUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
-          resolve(result.getIdToken().getJwtToken());
+          const refreshToken = result.getRefreshToken().getToken(); // getting the refreshToken
+          resolve({
+            idToken: result.getIdToken().getJwtToken(),
+            refreshToken: refreshToken,
+          });
         },
         onFailure: (err: Error) => {
           reject(new HttpException(err.message, HttpStatus.UNAUTHORIZED));
@@ -143,6 +148,28 @@ export class AuthService {
           resolve(userAttributes);
         }
       });
+    });
+  }
+
+  async refreshToken(username: string, refreshToken: string): Promise<string> {
+    const userData = {
+      Username: username,
+      Pool: this.userPool,
+    };
+
+    const cognitoUser = new CognitoUser(userData);
+
+    return new Promise((resolve, reject) => {
+      cognitoUser.refreshSession(
+        new CognitoRefreshToken({ RefreshToken: refreshToken }),
+        (err: Error, session) => {
+          if (err) {
+            reject(new HttpException(err.message, HttpStatus.UNAUTHORIZED));
+          } else {
+            resolve(session.getIdToken().getJwtToken());
+          }
+        },
+      );
     });
   }
 }

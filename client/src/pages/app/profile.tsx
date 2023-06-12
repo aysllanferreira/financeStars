@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import axios from 'axios';
 import me from '@/utils/me';
 
 export default function Profile() {
   const getMe = me();
+  const router = useRouter();
 
   // State to store the form values
   const [formValues, setFormValues] = useState({ first_name: '', last_name: '' });
@@ -28,13 +30,19 @@ export default function Profile() {
     formData.append('last_name', formValues.last_name);
 
     try {
-      const response = await axios.post('http://localhost:4000/dev/profile/update', formData, {
+      await axios.post('http://localhost:4000/dev/profile/update', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      console.log(response.data);
+      await axios.post('http://localhost:4000/dev/auth/refresh-token', {
+        username: getMe?.username,
+      }, { withCredentials: true });
+
+      // refresh the page
+      router.reload();
+
     } catch (error) {
       // handle error case
       console.error(error);
@@ -61,6 +69,7 @@ export default function Profile() {
               id="first_name"
               onChange={handleChange}
               className="border border-gray-300 rounded w-full px-3 py-2"
+              placeholder={getMe?.given_name}
             />
           </div>
 
@@ -74,6 +83,7 @@ export default function Profile() {
               id="last_name"
               onChange={handleChange}
               className="border border-gray-300 rounded w-full px-3 py-2"
+              placeholder={getMe?.family_name}
             />
           </div>
 
